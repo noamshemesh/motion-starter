@@ -56,7 +56,6 @@ http.createServer(function (req, res) {
     command = start(req.url[req.url.length - 1] - 1);
   } else if (req.url.indexOf('stop') >= 0) {
     command = stop(req.url[req.url.length - 1] - 1);
-    turnOnMilight();
   } else {
     console.log('Unknown command');
     sendNotOk(res);
@@ -102,24 +101,31 @@ function isDayLight() {
 
 function turnOnMilight() {
   if (!isDayLight()) {
-    turnGroup(1, true);
-    turnGroup(2, true);
+    console.log('Turning milight on');
+    turnGroups([1,2], true);
   }
 }
 
 function turnOffMilight() {
-  turnGroup(1, false);
+  turnGroups([1], false);
   if (!isDayLight()) {
-    turnGroup(2, true);
+    turnGroups([2], true);
   }
 }
 
-function turnGroup(group, state) {
+function turnGroups(groups, state) {
   if (state) {
-    milight.sendCommands(Commands.rgbw.on(group), Commands.rgbw.whiteMode(group), Commands.rgbw.brightness(20));
-    for (var i = 3; i <= 10; i++) {
-      milight.sendCommands(Commands.rgbw.brightness(10 * i));
+    for (group in groups) {
+      milight.sendCommands(Commands.rgbw.on(group), Commands.rgbw.whiteMode(group), Commands.rgbw.brightness(20));
     }
+    milight.pause(500);
+
+    for (group in groups) {
+      milight.sendCommands(Commands.rgbw.on(group), Commands.rgbw.brightness(100));
+    }
+//    for (var i = 3; i <= 10; i++) {
+//      milight.sendCommands(Commands.rgbw.brightness(10 * i));
+//    }
   } else {
     milight.sendCommands(Commands.rgbw.off(group));
   }
