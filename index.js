@@ -101,7 +101,6 @@ function isDayLight() {
 
 function turnOnMilight() {
   if (!isDayLight()) {
-    console.log('Turning milight on');
     turnGroups([1,2], true);
   }
 }
@@ -109,24 +108,29 @@ function turnOnMilight() {
 function turnOffMilight() {
   turnGroups([1], false);
   if (!isDayLight()) {
-    turnGroups([2], true);
+    setTimeout(function () {
+      turnGroups([2], true, { directly: true });
+    }, 1000);
   }
 }
 
-function turnGroups(groups, state) {
+function turnGroups(groups, state, options) {
+  options = options || {};
   if (state) {
-    for (group in groups) {
-      milight.sendCommands(Commands.rgbw.on(group), Commands.rgbw.whiteMode(group), Commands.rgbw.brightness(20));
-    }
-    milight.pause(500);
+    groups.forEach(function (group) {
+      milight.sendCommands(Commands.rgbw.on(group), Commands.rgbw.whiteMode(group), Commands.rgbw.brightness(options.directly ? 100 : 20));
+    });
 
-    for (group in groups) {
-      milight.sendCommands(Commands.rgbw.on(group), Commands.rgbw.brightness(100));
+    if (!options.directly) {
+      milight.pause(500);
+
+      groups.forEach(function (group) {
+        milight.sendCommands(Commands.rgbw.on(group), Commands.rgbw.brightness(100));
+      });
     }
-//    for (var i = 3; i <= 10; i++) {
-//      milight.sendCommands(Commands.rgbw.brightness(10 * i));
-//    }
   } else {
-    milight.sendCommands(Commands.rgbw.off(group));
+    groups.forEach(function (group) {
+      milight.sendCommands(Commands.rgbw.off(group));
+    });
   }
 }
