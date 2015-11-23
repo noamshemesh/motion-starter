@@ -27,6 +27,7 @@ function start(key) {
   console.log('Setting ' + key + ' to true. map is ', map);
   map[key] = true;
   if (map[0] && map[1]) {
+    turnOffMilight();
     return SERVICE_PATH + 'start';
   }
 
@@ -40,6 +41,9 @@ function stop(key) {
 
   console.log('Setting ' + key + ' to false. map is ', map);
   map[key] = false;
+
+  turnOnMilight();
+
   return SERVICE_PATH + 'stop';
 }
 
@@ -50,7 +54,6 @@ http.createServer(function (req, res) {
 
   if (req.url.indexOf('start') >= 0) {
     command = start(req.url[req.url.length - 1] - 1);
-    turnOffMilight();
   } else if (req.url.indexOf('stop') >= 0) {
     command = stop(req.url[req.url.length - 1] - 1);
     turnOnMilight();
@@ -117,7 +120,7 @@ function turnGroup(group, state) {
     for (var i = 3; i <= 10; i++) {
       milight.sendCommands(Commands.rgbw.brightness(10 * i));
     }
+  } else {
+    milight.sendCommands(Commands.rgbw.off(group));
   }
-
-  milight.sendCommands(Commands.rgbw.off(group));
 }
