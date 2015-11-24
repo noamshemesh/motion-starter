@@ -1,3 +1,4 @@
 #!/bin/bash
 
-./generic.sh karen 141 2
+loc=`dirname $0`
+$loc/generic.sh karen 141 2

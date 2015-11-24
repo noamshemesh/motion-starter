@@ -3,17 +3,18 @@
 NAME=$1
 ENDS_WITH=$2
 ID=$3
+loc=`dirname $0`
 
-while true; do
+for i in `seq 1 5`; do
 	ping -W 1 -q -n -c 1 192.168.0.$ENDS_WITH > /dev/null
 	A=$?
 	ping -W 1 -q -n -c 1 192.168.1.$ENDS_WITH > /dev/null
 	B=$?
 
 	C=$(($A & $B))
-	LAST=`cat ./$NAME.state`
+	LAST=`cat $loc/$NAME.state`
 
-	echo $C > ./$NAME.state
+	echo $C > $loc/$NAME.state
 	if [ $C -ne $LAST ]; then
 	  if [ $C -eq 1 ]; then
 	    echo "starting $NAME"
@@ -24,5 +25,5 @@ while true; do
 	  fi
 	fi
 
-	sleep 10
+	sleep 8
 done

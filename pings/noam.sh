@@ -1,3 +1,4 @@
 #!/bin/bash
 
-./generic.sh noam 140 1
+loc=`dirname $0`
+$loc/generic.sh noam 140 1
