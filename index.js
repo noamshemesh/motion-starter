@@ -96,7 +96,7 @@ var milight = new Milight({
 function isDayLight() {
   var date = new Date();
   var hourNow = date.getHours();
-  return hourNow >= 8 && hourNow < 17;
+  return hourNow >= 23 && hourNow < 17;
 }
 
 function turnOnMilight() {
