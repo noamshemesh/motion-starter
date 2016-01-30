@@ -13,7 +13,7 @@ function sendNotOk(res) {
   res.end('Failed');
 }
 
-var SERVICE_PATH = 'sudo /usr/sbin/service motion ';
+var SERVICE_PATH = 'sudo /usr/sbin/service ';
 var map = [];
 
 function isNumeric(n) {
@@ -28,7 +28,7 @@ function start(key) {
   map[key] = true;
   if (map[0] && map[1]) {
     turnOffMilight();
-    return SERVICE_PATH + 'start';
+    return SERVICE_PATH + 'motion start && ' + SERVICE_PATH + 'jasper stop';
   }
 
   return null;
@@ -44,7 +44,7 @@ function stop(key) {
 
   turnOnMilight();
 
-  return SERVICE_PATH + 'stop';
+  return SERVICE_PATH + 'motion stop && ' + SERVICE_PATH + 'jasper start';
 }
 
 http.createServer(function (req, res) {
@@ -96,7 +96,7 @@ var milight = new Milight({
 function isDayLight() {
   var date = new Date();
   var hourNow = date.getHours();
-  return hourNow >= 23 && hourNow < 17;
+  return hourNow < 17 || hourNow >= 23;
 }
 
 function turnOnMilight() {
