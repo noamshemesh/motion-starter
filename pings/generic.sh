@@ -4,8 +4,8 @@ NAME=$1
 ENDS_WITH=$2
 ID=$3
 loc=`dirname $0`
-
-for i in `seq 1 5`; do
+suspect=0
+for i in `seq 1 18`; do
 	ping -W 1 -q -n -c 1 192.168.0.$ENDS_WITH > /dev/null
 	A=$?
 	ping -W 1 -q -n -c 1 192.168.1.$ENDS_WITH > /dev/null
@@ -14,14 +14,22 @@ for i in `seq 1 5`; do
 	C=$(($A & $B))
 	LAST=`cat $loc/$NAME.state`
 
-	echo $C > $loc/$NAME.state
 	if [ $C -ne $LAST ]; then
 	  if [ $C -eq 1 ]; then
-	    echo "starting $NAME"
-	    curl http://localhost:8125/start$ID
+            if [ $suspect -eq 5 ]; then
+	      echo "`date` starting $NAME"
+	      curl http://localhost:8125/start$ID
+	      echo $C > $loc/$NAME.state
+              suspect=0
+            else
+              echo "`date` suspecting $NAME"
+              suspect=$(($suspect+1))
+            fi
 	  else
-	    echo "stopping $NAME"
+            suspect=0
+	    echo "`date` stopping $NAME"
 	    curl http://localhost:8125/stop$ID
+	    echo $C > $loc/$NAME.state
 	  fi
 	fi
 
