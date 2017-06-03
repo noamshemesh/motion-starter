@@ -1,7 +1,6 @@
 var process = require('child_process');
 var http = require('http');
-var Milight = require('node-milight-promise').MilightController;
-var Commands = require('node-milight-promise').commands;
+var request = require('request')
 
 function sendOk(res) {
   res.writeHead(200, {'Content-Type': 'text/plain'});
@@ -87,12 +86,6 @@ http.createServer(function (req, res) {
 
 console.log('Server running on port 8125');
 
-var milight = new Milight({
-        ip: "192.168.1.109",
-        delayBetweenCommands: 35,
-        commandRepeat: 3
-    });
-
 function isDayLight() {
   var date = new Date();
   var hourNow = date.getHours();
@@ -101,36 +94,30 @@ function isDayLight() {
 
 function turnOnMilight() {
   if (!isDayLight()) {
-    turnGroups([1,2], true);
+    turnGroups([1,2,4], true);
   }
 }
 
 function turnOffMilight() {
-  turnGroups([1], false);
+  turnGroups([1,2,3], false);
   if (!isDayLight()) {
     setTimeout(function () {
-      turnGroups([2], true, { directly: true });
+      turnGroups([4], true);
     }, 1000);
   }
 }
+
+var groupNames = [ "living_room", "bedroom", "led_strips", "kitchen_table" ]
 
 function turnGroups(groups, state, options) {
   options = options || {};
   if (state) {
     groups.forEach(function (group) {
-      milight.sendCommands(Commands.rgbw.on(group), Commands.rgbw.whiteMode(group), Commands.rgbw.brightness(options.directly ? 100 : 20));
+    	request.post("http://localhost:8123/api/services/light/turn_on", { json: { entity_id: "light." + groupNames[group-1] } })
     });
-
-    if (!options.directly) {
-      milight.pause(500);
-
-      groups.forEach(function (group) {
-        milight.sendCommands(Commands.rgbw.on(group), Commands.rgbw.brightness(100));
-      });
-    }
   } else {
     groups.forEach(function (group) {
-      milight.sendCommands(Commands.rgbw.off(group));
+      request.post("http://localhost:8123/api/services/light/turn_off", { json: { entity_id: "light." + groupNames[group-1] } })
     });
   }
 }

@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "node-milight-promise": "0.0.3"
+    "request": "^2.81.0"
   }
 }

@@ -5,7 +5,7 @@ ENDS_WITH=$2
 ID=$3
 loc=`dirname $0`
 suspect=0
-for i in `seq 1 18`; do
+for i in `seq 1 900`; do
 	ping -W 1 -q -n -c 1 192.168.0.$ENDS_WITH > /dev/null
 	A=$?
 	ping -W 1 -q -n -c 1 192.168.1.$ENDS_WITH > /dev/null
@@ -16,7 +16,7 @@ for i in `seq 1 18`; do
 
 	if [ $C -ne $LAST ]; then
 	  if [ $C -eq 1 ]; then
-            if [ $suspect -eq 5 ]; then
+            if [ $suspect -eq 310 ]; then
 	      echo "`date` starting $NAME"
 	      curl http://localhost:8125/start$ID
 	      echo $C > $loc/$NAME.state
@@ -33,5 +33,5 @@ for i in `seq 1 18`; do
 	  fi
 	fi
 
-	sleep 8
+	sleep 2
 done
