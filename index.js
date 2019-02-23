@@ -27,7 +27,7 @@ function start(key) {
   map[key] = true;
   if (map[0] && map[1]) {
     turnOffMilight();
-    return SERVICE_PATH + 'motion start && ' + SERVICE_PATH + 'jasper stop';
+    return SERVICE_PATH + 'motion start';
   }
 
   return null;
@@ -43,7 +43,7 @@ function stop(key) {
 
   turnOnMilight();
 
-  return SERVICE_PATH + 'motion stop && ' + SERVICE_PATH + 'jasper start';
+  return SERVICE_PATH + 'motion stop';
 }
 
 http.createServer(function (req, res) {

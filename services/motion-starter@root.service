@@ -1,0 +1,11 @@
+[Unit]
+Description=Motion Starter
+After=network-online.target
+
+[Service]
+Type=simple
+User=%i
+ExecStart=/usr/bin/node /home/pi/motion-starter/index.js
+
+[Install]
+WantedBy=multi-user.target
